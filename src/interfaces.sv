@@ -5,14 +5,14 @@ interface core_intf();
   logic[31:0] core_rdata;
   logic ready_core;
 
-  modport cash_controller(
+  modport cache_controller(
     input core_addr, core_valid;
     output core_rdata, ready_core;
   );
 endinterface
 
 //Интерфейс с кэшем
-interface cash_intf();
+interface cache_intf();
   logic[5:0] storage_windex;
   logic storage_we;
   logic[5:0] storage_rindex;
@@ -21,7 +21,7 @@ interface cash_intf();
   logic storage_rvalid;
   logic[24:0] storage_rtag;
   logic[31:0] storage_rdata;
-  modport cash_controller(
+  modport cache_controller(
     input storage_rtag, storage_rdata, storage_rvalid;
     output storage_windex, storage_we, storage_rindex, storage_wtag, storage_wdata;
   );
@@ -40,7 +40,7 @@ interface memory_intf();
   logic[2:0] hsize;
   logic[1:0] h_trans;
   
-  modport cash_controller(
+  modport cache_controller(
     input mem_rdata, mem_ready;
     output mem_addr, mem_valid;
   );
