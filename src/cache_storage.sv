@@ -1,6 +1,6 @@
-module cash_storage(
+module cache_storage(
   input wire clk,  rst,
-  cash_intf.storage inf //Экземпляр интерфейса
+  cache_intf.storage inf //Экземпляр интерфейса
 );
 
   //Два массива памяти
