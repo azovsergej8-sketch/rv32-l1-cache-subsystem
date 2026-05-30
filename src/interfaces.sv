@@ -11,7 +11,7 @@ interface core_intf();
   );
 
    modport pre_buff(
-    input core_addr, core_valid;
+    input core_addr, core_valid, ready_core;
   );
 endinterface
 
