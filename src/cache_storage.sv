@@ -4,22 +4,20 @@ module cache_storage(
 );
 
   //Два массива памяти
-  reg[24:0] tag[15]; // Теги
+  reg[23:0] tag[15]; // Теги
   reg[127:0] data[15]; //Инструкции
   
   //FSM
   always@(posedge clk or negedge rst) begin
     if(!rst) begin
-      inf.storage_rtag[0] <= 0;
     end else begin
       if(!inf.storage_we) begin
         inf.storage_rtag[23:0] <= tag[inf.storage_rindex];
         inf.storage_rdata <= data[inf.storage_rindex];
-        inf.storage_rtag[0] <= 1;
       end else begin
         tag[inf.storage_windex] <= inf.storage_wtag;
         data[inf.storage_windex] <= inf.storage_wdata;
-        inf.storage_rtag[0] <= 0;
+        inf.storage_rtag[0] <= 1;
       end
     end
   end
