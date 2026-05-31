@@ -7,7 +7,7 @@ module pre_access_buffer(
   typedef enum logic[1:0]{IDLE, CACHE_WAIT, CACHE_CHECK, COMB_DATA} state_t;
   state_t state;
   logic[31:0] register_addr;
-  logic[2:0] offset;
+  logic[3:0] offset;
   always_ff@(posedge clk or negedge rst) begin
     if(!rst) begin
       buff_intf_cache.buf_data <= 0;
@@ -36,7 +36,7 @@ module pre_access_buffer(
           end else begin
             if(register_addr[3:1] == 3'b111) begin
               buff_intf_cache.buf_data[15:0] <= buff_intf_cache.storage_rdata[112 +: 16];
-              buff_intf_cache.storage_rindex <= register_addr[8:4] + 1;
+              buff_intf_cache.storage_rindex <= register_addr[7:4] + 1;
               state <= COMB_DATA;
             end else begin
               buff_intf_cache.buf_data <= buff_intf_cache.storage_rdata[offset*16 +: 32];
