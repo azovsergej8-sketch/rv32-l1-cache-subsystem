@@ -1,6 +1,5 @@
-input logic clk,
-    input logic rst,
-    
+module top_module(
+    input logic clk, rst,
     core_intf.cache_controller intermediate_core_io,
     memory_intf.cache_controller intermediate_mem_io
 );
