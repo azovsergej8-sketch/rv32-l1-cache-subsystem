@@ -1,7 +1,7 @@
 module top_module(
     input logic clk, rst,
-    core_intf.cache_controller intermediate_core_io,
-    memory_intf.cache_controller intermediate_mem_io
+    core_intf intermediate_core_io,
+    memory_intf intermediate_mem_io
 );
 
   // 1. Внутренние интерфейсы для Way 0 и Way 1
