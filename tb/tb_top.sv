@@ -28,7 +28,7 @@ class cache_req_item extends uvm_sequence_item;
   }
   //Ограничение по области памяти
   constraint legal_ram_space {
-    adrr[31:12] inside {[0:15]};
+    addr[31:12] inside {[0:15]};
   }    
 endclass
 
@@ -92,30 +92,9 @@ class cache_mem_model extends uvm_object;
   endfunction
 endclass
 
-// 4. Драйвер
-class cache_driver extends uvm_driver #(cache_req_item);
-  `uvm_component_utils(cache_driver)
-  virtual core_intf vif;
-
-  function new(string name, uvm_component parent);
-    super.new(name, parent);
-  endfunction
-
-  task run_phase(uvm_phase phase);
-    forever begin
-      seq_item_port.get_next_item(req);
-      @(posedge tb_top.clk iff vif.ready_core === 1'b1);
-      vif.core_addr <= req.addr;
-      vif.core_valid <= 1'b1;
-      @(posedge tb_top.clk);
-      vif.core_valid <= 1'b0;
-      seq_item_port.item_done();
-    end
-  endtask
-endclass
 
 // 5. Монитор
-lass cache_monitor extends uvm_monitor;
+сlass cache_monitor extends uvm_monitor;
   `uvm_component_utils(cache_monitor)
   
   virtual core_intf vif_core;
@@ -197,9 +176,7 @@ class cache_scoreboard extends uvm_scoreboard;
     forever begin
       req_fifo.get(req);
       rsp_fifo.get(rsp);
-
       f_half = mem_model.read_16(req.addr);
-
       if (f_half[1:0] != 2'b11) begin
         // 16-битная команда
         expected_data = {16'h0000, f_half};
@@ -207,17 +184,14 @@ class cache_scoreboard extends uvm_scoreboard;
       end else begin
         s_half = mem_model.read_16(req.addr + 2);
         expected_data = {s_half, f_half};
-        
         // Разрыв на границе кэш-линии
         if (req.addr[3:1] == 3'b111) expected_cycles = 4;
         else expected_cycles = 3; 
       end
-
-      // 3. Проверка
+      // Проверка
       if (rsp.rdata !== expected_data) begin
         `uvm_error("DATA_ERR", $sformatf("Mismatch! Addr: %0h Exp: %0h Got: %0h", req.addr, expected_data, rsp.rdata))
       end
-      
       if (rsp.cycle_count <= 4 && rsp.cycle_count != expected_cycles) begin
         `uvm_error("TIME_ERR", $sformatf("Timing Mismatch at %0h! Exp: %0d Got: %0d", req.addr, expected_cycles, rsp.cycle_count))
       end
@@ -225,7 +199,7 @@ class cache_scoreboard extends uvm_scoreboard;
   endtask
 endclass
 
-//5. Ответчик шины
+// 5.Ответчик шины
 class cache_mem_responder extends uvm_driver #(uvm_sequence_item);
   `uvm_component_utils(cache_mem_responder)
 
@@ -281,29 +255,24 @@ class cache_base_seq extends uvm_sequence #(cache_req_item);
   endtask
 endclass
 
-// 8. Драйвер Ядра
+//Драйвер
 class cache_driver extends uvm_driver #(cache_req_item);
   `uvm_component_utils(cache_driver)
-
   virtual core_intf vif_core;
-
   function new(string name, uvm_component parent);
     super.new(name, parent);
   endfunction
-
   function void build_phase(uvm_phase phase);
     super.build_phase(phase);
     if(!uvm_config_db#(virtual core_intf)::get(this, "", "vif_core", vif_core))
       `uvm_fatal("DRV", "Could not get vif_core")
   endfunction
-
+      
   task run_phase(uvm_phase phase);
     vif_core.core_valid <= 0;
     vif_core.core_addr  <= 0;
-
     forever begin
       seq_item_port.get_next_item(req);
-      
       @(posedge tb_top.clk);
       vif_core.core_valid <= 1'b1;
       vif_core.core_addr  <= req.addr;
@@ -312,7 +281,6 @@ class cache_driver extends uvm_driver #(cache_req_item);
       while (vif_core.ready_core !== 1'b1) begin
         @(posedge tb_top.clk);
       end
-      
       vif_core.core_valid <= 1'b0;
       seq_item_port.item_done();
     end
@@ -347,7 +315,79 @@ class cache_agent extends uvm_agent;
   endfunction
 endclass
 
-// 10. Тест
+class cache_coverage extends uvm_subscriber #(cache_req_item);
+  `uvm_component_utils(cache_coverage)
+  // Фиксация адреса в момент сэмплинга
+  logic [31:0] sample_addr;
+  // Описание группы покрытия
+  covergroup cache_cg;
+    // 1. Проверка прохода по всем 16 строкам кэша
+    index_cp: coverpoint sample_addr[7:4] {
+      bins all_indexes[] = {[0:15]};
+    }
+    // 2. Проверяем смещения внутри строки
+    offset_cp: coverpoint sample_addr[3:1] {
+      bins normal_offsets[] = {[0:6]};
+      bins split_offset     = {3'b111};
+    }
+    tag_cp: coverpoint sample_addr[31:12] {
+      bins all_tags[] = {[0:15]};
+    }
+    cross_line_split: cross index_cp, offset_cp {
+      ignore_bins non_split_cases = cross_line_split with (offset_cp != 3'b111);
+    }
+    cross_cache_replacement: cross index_cp, tag_cp;
+  endgroup
+  // Конструктор
+  function new(string name, uvm_component parent);
+    super.new(name, parent);
+    cache_cg = new(); 
+  endfunction
+
+  function void write(cache_req_item t);
+    sample_addr = t.addr;
+    cache_cg.sample();
+  endfunction
+
+endclass
+    
+class cache_env extends uvm_env;
+  `uvm_component_utils(cache_env)
+  // 1. Декларация всех компонентов окружения
+  cache_agent         agent_core; 
+  cache_mem_responder mem_responder; 
+  cache_scoreboard    scbd; 
+  cache_coverage      cov; 
+
+  // 2. Объект единой модели памяти
+  cache_mem_model     shared_mem;
+
+  function new(string name, uvm_component parent);
+    super.new(name, parent);
+  endfunction
+
+  // 3. Фаза сборки компонентов
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    shared_mem = cache_mem_model::type_id::create("shared_mem");
+    shared_mem.init_mem(); 
+    uvm_config_db#(cache_mem_model)::set(this, "*", "mem_model", shared_mem);
+    agent_core    = cache_agent::type_id::create("agent_core", this);
+    mem_responder = cache_mem_responder::type_id::create("mem_responder", this);
+    scbd          = cache_scoreboard::type_id::create("scbd", this);
+    cov           = cache_coverage::type_id::create("cov", this);
+  endfunction
+
+  // 4. Фаза связывания портов
+  function void connect_phase(uvm_phase phase);
+    super.connect_phase(phase);
+    agent_core.monitor.req_ap.connect(scbd.req_fifo.analysis_export);
+    agent_core.monitor.rsp_ap.connect(scbd.rsp_fifo.analysis_export);
+    agent_core.monitor.req_ap.connect(cov.analysis_export);
+  endfunction
+endclass
+    
+//10.Тест
 class cache_test extends uvm_test;
   `uvm_component_utils(cache_test)
 
@@ -402,3 +442,4 @@ module tb_top;
     // Запускаем тест
     run_test("cache_test");
   end
+
