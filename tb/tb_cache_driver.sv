@@ -11,12 +11,11 @@ class cache_driver;
       if(!tr.randomize()) $error("Randomization failed!");
       @(clk_e);
       if(ready_core) begin
-        if(!core_valid) begin
-          cr_intf.core_addr = tr.addr;
-          core_valid <= 1;
-          addr_fifo.put(tr.addr);
-        end else core_valid <= 0;
+        cr_intf.core_addr = tr.addr;
+        core_valid <= 1;
+        addr_fifo.put(tr.addr);
       end
+      if(core_valid) core_valid <= 0;
     end
   endtask
 endclass
