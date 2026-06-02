@@ -1,9 +1,9 @@
 module cache_ctrl(
   input wire clk, rst,
-  core_intf.cache_controller intf_core;
-  cache_intf.cache_controller intf_cache_w0;
-  cache_intf.cache_controller intf_cache_w1;
-  memory_intf.cache_controller intf_memory;
+  core_intf.cache_controller intf_core,
+  cache_intf.cache_controller intf_cache_w0,
+  cache_intf.cache_controller intf_cache_w1,
+  memory_intf.cache_controller intf_memory
 );
   //Сохраненный адрес и состояние
   logic[31:0] addr_reg;
