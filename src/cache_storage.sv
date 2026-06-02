@@ -4,8 +4,8 @@ module cache_storage(
 );
 
   //Два массива памяти
-  reg[24:0] tag[15]; // Теги
-  reg[127:0] data[15]; //Инструкции
+  reg[24:0] tag[16]; // Теги
+  reg[127:0] data[16]; //Инструкции
   
   //FSM
   always@(posedge clk or negedge rst) begin
