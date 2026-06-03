@@ -12,11 +12,11 @@ class cache_driver;
       @(clk_e);
       if(cr_intf.ready_core) begin
         cr_intf.core_addr = tr.addr;
-        cr_intf.core_valid <= 1;
+        cr_intf.core_valid = 1;
         tr_fifo.put(tr);
         tr.take_addr(tr.addr);
       end
-      if(cr_intf.core_valid) core_valid <= 0;
+      if(cr_intf.core_valid) cr_intf.core_valid = 0;
     end
   endtask
 endclass
