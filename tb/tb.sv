@@ -9,7 +9,7 @@ module tb_top;
   memory_intf intermediate_mem_io;
   mailbox #(cache_transaction) addr_fifo;
   
-  top_module(
+  top_module dut(
     .clk                   (clk),
     .rst                   (rst),
     .intermediate_core_io  (intermediate_core_io),
