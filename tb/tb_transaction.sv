@@ -27,7 +27,7 @@ class cache_transaction;
   endfunction
 
   function void take_addr(logic[31:0] a);
-    if(addres_history.size() == max_history_size) address_history.pop_front();
-    addres_history.push_back(a);
+    if(address_history.size() == max_history_size) address_history.pop_front();
+    address_history.push_back(a);
   endfunction
 endclass
