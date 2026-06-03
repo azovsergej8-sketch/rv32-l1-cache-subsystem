@@ -7,7 +7,7 @@ module tb_top;
 
   core_intf intermediate_core_io;
   memory_intf intermediate_mem_io;
-  malibox #(logic[31:0]) addr_fifo;
+  mailbox #(logic[31:0]) addr_fifo;
   
   top_module(
     .clk                   (clk),
