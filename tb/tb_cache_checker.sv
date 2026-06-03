@@ -1,10 +1,10 @@
 class cache_checker;
-  malibox #(logic[31:0]) addr_fifo;
+  mailbox #(logic[31:0]) addr_fifo;
   cache_mem_model mem;
   event clk_ev;
   
   //Конструктор
-  function new(malibox #(logic[31:0]) addr_fi, cache_mem_model mem_obj, event clk_e);
+  function new(mailbox #(logic[31:0]) addr_fi, cache_mem_model mem_obj, event clk_e);
     this.addr_fifo = addr_fi;
     this.mem = mem_obj;
     this.clk_ev = clk_e;
