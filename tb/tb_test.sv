@@ -6,7 +6,7 @@ class test;
   cache_mem_model mem;
   event clk_ev;
 
-  function new(virtual core_intf c_if, virtual memory_intf m_if,  mailbox #(logic[31:0]) addr_fifo, event clk_e);
+  function new(virtual core_intf c_if, virtual memory_intf m_if,  mailbox #(cache_transaction) addr_fifo, event clk_e);
     this.cr_if = c_if;
     this.mem_if = m_if;
     this.drv = new(addr_fifo);
