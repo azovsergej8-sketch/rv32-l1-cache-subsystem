@@ -1,7 +1,7 @@
 class cache_driver;
-  mailbox #(logic[31:0]) tr_fifo;
+  mailbox #(cache_transaction) tr_fifo;
   
-  function new( mailbox #(logic[31:0]) addr_fifo);
+  function new( mailbox #(cache_transaction) addr_fifo);
     this.tr_fifo = addr_fifo;
   endfunction
   
@@ -13,7 +13,7 @@ class cache_driver;
       if(cr_intf.ready_core) begin
         cr_intf.core_addr = tr.addr;
         cr_intf.core_valid <= 1;
-        tr_fifo.put(tr.addr);
+        tr_fifo.put(tr);
         tr.take_addr(tr.addr);
       end
       if(cr_intf.core_valid) core_valid <= 0;
