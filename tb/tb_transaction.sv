@@ -21,7 +21,7 @@ class cache_transaction;
 
   function void post_randomize();
     if(address_history.size() > 0 && is_replace_check) begin
-      logic[3:0] rand_idex = $urandom_range(0, address_history.size() - 1);
+      logic[3:0] rand_index = $urandom_range(0, address_history.size() - 1);
       addr = {address_history[rand_index][31:4], addr[3:0]};
     end
   endfunction
