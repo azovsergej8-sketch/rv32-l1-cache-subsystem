@@ -21,6 +21,7 @@ class test;
       mem.run_mem_responder(mem_if, clk_ev);
       chk.true_model(cr_if);
     join_any
+    disable fork;
     $display("Тест завершен!");
   endtask
 endclass
