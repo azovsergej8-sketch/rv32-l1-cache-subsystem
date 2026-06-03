@@ -96,7 +96,7 @@ module cache_ctrl(
                 intf_core.ready_core <= 1;
               //3. Смещение некратное 2
               end else if(count_bit == addr_reg[3:1] + 1) begin
-                if(intf_memory.mem_rdata[1:0] == 2'b11) begin
+                if((intf_memory.mem_rdata[1:0] == 2'b11 && count < 4) || (count == 4 && intf_memory.mem_rdata[17:16] == 2'b11)) begin
                   intf_core.core_rdata[15:0] <= intf_memory.mem_rdata[31:16];
                   is_half <= 1;
                 end else begin
@@ -130,10 +130,11 @@ module cache_ctrl(
                   intf_cache_w1.storage_wdata[127:96] <= intf_memory.mem_rdata;
                   last_access[addr_reg[7:4]] <= 1;
                 end
-                if(is_half) begin
-                  addr_reg <= {addr_reg[31:4] + 1'b1, 4'b0000};
-                  state <= CACHE_CHECK;
-                end
+                //Изменение адреса
+                if(intf_memory.mem_rdata[17:16] == 2'b11 && count_bit == addr_reg[3:1] + 1) begin
+                addr_reg <= {addr_reg[31:4] + 1'b1, 4'b0000};
+                state <= CACHE_CHECK;
+            end
               end else begin
                 //Считывание текущих
                 data_line[(count-1)*32 +: 32] <= intf_memory.mem_rdata;
@@ -144,8 +145,9 @@ module cache_ctrl(
                 intf_memory.mem_valid <= 1;
               end
               count <= count + 1;
-            //Запрос половины команды из следующей строки
-            end else if(is_half) begin
+            end
+          //Запрос половины команды из следующей строки
+          end else if(is_half) begin
               intf_memory.mem_valid <= 0;
               intf_memory.h_trans <= 2'b00;
               is_half <= 0;
