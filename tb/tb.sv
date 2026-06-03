@@ -17,6 +17,7 @@ module tb_top;
   );
 
   initial begin
+    addr_fifo = new();
     test actual_test = new(intermediate_core_io, intermediate_mem_io, addr_fifo, clk_ev);
     actual_test.run();
     $finish;
