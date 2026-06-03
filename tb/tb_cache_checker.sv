@@ -14,6 +14,7 @@ class cache_checker;
   task true_model(virtual core_intf cr_inf);
     forever begin
       @(clk_ev);
+      #2
       if(cr_inf.ready_core) begin
         cache_transaction local_tr;
         logic[31:0] expect_data;
