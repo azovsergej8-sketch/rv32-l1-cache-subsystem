@@ -12,7 +12,7 @@ class cache_transaction;
   };
 
   constraint split_inj_c{
-    inject_split_err dist { 1 := 10, 0 := 90 };
+    inj_split dist { 1 := 10, 0 := 90 };
   };
 
   constraint check_replace_c{
@@ -20,14 +20,14 @@ class cache_transaction;
   };
 
   function void post_randomize();
-    if(addres_history.size() > 0 && is_replace_check) begin
+    if(address_history.size() > 0 && is_replace_check) begin
       logic[3:0] rand_idex = $urandom_range(0, address_history.size() - 1);
       addr = {address_history[rand_index][31:4], addr[3:0]};
     end
   endfunction
 
   function void take_addr(logic[31:0] a);
-    if(addres_history.size() == max_size) address_history.pop_front();
+    if(addres_history.size() == max_history_size) address_history.pop_front();
     addres_history.push_back(a);
   endfunction
 endclass
