@@ -21,6 +21,11 @@ module cache_ctrl(
   //FSM
   always@(posedge clk or negedge rst) begin
     if(!rst) begin
+      state <= IDLE;
+      last_access[0] <= 0;  last_access[1] <= 0;  last_access[2] <= 0;  last_access[3] <= 0;
+      last_access[4] <= 0;  last_access[5] <= 0;  last_access[6] <= 0;  last_access[7] <= 0;
+      last_access[8] <= 0;  last_access[9] <= 0;  last_access[10] <= 0; last_access[11] <= 0;
+      last_access[12] <= 0; last_access[13] <= 0; last_access[14] <= 0; last_access[15] <= 0; 
     end else begin
       case(state)
         IDLE: begin
@@ -77,7 +82,7 @@ module cache_ctrl(
               if(intf_core.ready_core) intf_core.ready_core <= 0;
               
               //Прямое пробрасывание данных процессору
-              //1. Если это 0 смещение
+              //
               if(count == 1 && addr_reg[3:1] == 3'b000) begin
                 if(intf_memory.mem_rdata[1:0] == 2'b11) begin
                   intf_core.core_rdata <= intf_memory.mem_rdata;
