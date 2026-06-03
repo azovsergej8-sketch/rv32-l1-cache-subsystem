@@ -6,17 +6,17 @@ class cache_driver;
   endfunction
   
   task drive(virtual core_intf cr_intf, event clk_e);
-    always begin
+    forever begin
       cache_transaction tr = new();
       if(!tr.randomize()) $error("Randomization failed!");
       @(clk_e);
-      if(ready_core) begin
+      if(cr_intf.ready_core) begin
         cr_intf.core_addr = tr.addr;
-        core_valid <= 1;
-        addr_fifo.put(tr.addr);
+        cr_intf.core_valid <= 1;
+        tr_fifo.put(tr.addr);
         tr.take_addr(tr.addr);
       end
-      if(core_valid) core_valid <= 0;
+      if(cr_intf.core_valid) core_valid <= 0;
     end
   endtask
 endclass
