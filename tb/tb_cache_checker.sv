@@ -13,23 +13,21 @@ class cache_checker;
   //Сравнение
   task true_model(virtual core_intf cr_inf);
     forever begin
-      @(clk_ev);
       #2
-      if(cr_inf.ready_core) begin
-        cache_transaction local_tr;
-        logic[31:0] expect_data;
-        if(!(addr_fifo.num() == 0)) begin
-          addr_fifo.get(local_tr);
-          expect_data = mem.get_data(local_tr.addr);
-          $display("[INF_TR] Testing transaction. Addr: %h | Checking Cache Replacement: %h | Checking Split Addr: %h", local_tr.addr, local_tr.is_replace_check, local_tr.inj_split);
-          if(cr_inf.core_rdata == expect_data) begin
-            $display("[CHECKER_OK]  Match! Addr: %h | Data: %h", local_tr.addr, cr_inf.core_rdata);
-          end else begin
-            $error("[CHECKER_FAIL] MISMATCH! Addr: %h | Exp: %h | Got: %h", local_tr.addr, expect_data, cr_inf.core_rdata);
-          end
+      @(posedge cr_inf.ready_core);
+      cache_transaction local_tr;
+      logic[31:0] expect_data;
+      if(!(addr_fifo.num() == 0)) begin
+        addr_fifo.get(local_tr);
+        expect_data = mem.get_data(local_tr.addr);
+        $display("[INF_TR] Testing transaction. Addr: %h | Checking Cache Replacement: %h | Checking Split Addr: %h", local_tr.addr, local_tr.is_replace_check, local_tr.inj_split);
+        if(cr_inf.core_rdata == expect_data) begin
+          $display("[CHECKER_OK]  Match! Addr: %h | Data: %h", local_tr.addr, cr_inf.core_rdata);
         end else begin
-          $error("[CHECKER_ERR] Empty FIFO! Cache returned data, but no pending request found.");
+          $error("[CHECKER_FAIL] MISMATCH! Addr: %h | Exp: %h | Got: %h", local_tr.addr, expect_data, cr_inf.core_rdata);
         end
+      end else begin
+        $error("[CHECKER_ERR] Empty FIFO! Cache returned data, but no pending request found.");
       end
     end
   endtask
