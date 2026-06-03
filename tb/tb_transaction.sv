@@ -16,7 +16,7 @@ class cache_transaction;
   };
 
   constraint check_replace_c{
-    is_replace_check dist {0 := 30, 0 := 70};
+    is_replace_check dist {1 := 30, 0 := 70};
   };
 
   function void post_randomize();
