@@ -14,6 +14,7 @@ class cache_driver;
         cr_intf.core_addr = tr.addr;
         core_valid <= 1;
         addr_fifo.put(tr.addr);
+        tr.take_addr(tr.addr);
       end
       if(core_valid) core_valid <= 0;
     end
