@@ -19,4 +19,5 @@ class cache_mem_model;
       end
       if(mem_if.mem_ready) mem_if.mem_ready <= 0;
     end
+  endtask
 endclass
