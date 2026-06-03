@@ -1,7 +1,7 @@
 class cache_driver;
-  malibox #(logic[31:0]) tr_fifo;
+  mailbox #(logic[31:0]) tr_fifo;
   
-  function new( malibox #(logic[31:0]) addr_fifo);
+  function new( mailbox #(logic[31:0]) addr_fifo);
     this.tr_fifo = addr_fifo;
   endfunction
   
