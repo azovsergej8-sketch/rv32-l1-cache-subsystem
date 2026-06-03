@@ -20,6 +20,7 @@ class cache_checker;
         if(!(addr_fifo.num() == 0)) begin
           addr_fifo.get(local_addr);
           expect_data = mem.get_data(local_addr);
+          $display("[INF_TR] Testing transaction. Addr: %h | Checking Cache Replacement: %h | Checking Split Addr: %h", local_addr, expect_data.is_replace_check, expect_data.inj_split);
           if(cr_inf.core_rdata == expect_data) begin
             $display("[CHECKER_OK]  Match! Addr: %h | Data: %h", local_addr, cr_inf.core_rdata);
           end else begin
