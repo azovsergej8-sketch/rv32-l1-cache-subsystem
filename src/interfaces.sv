@@ -26,7 +26,7 @@ interface cache_intf();
   logic[24:0] storage_rtag;
   logic[127:0] storage_rdata;
   logic buf_ready;
-  logic[32:0] buf_data;
+  logic[31:0] buf_data;
   logic[24:0] buf_tag;
   modport cache_controller(
     input buf_ready, buf_data, buf_tag;
@@ -55,6 +55,6 @@ interface memory_intf();
   
   modport cache_controller(
     input mem_rdata, mem_ready;
-    output mem_addr, mem_valid;
+    output mem_addr, mem_valid, hsize, h_trans;
   );
 endinterface
