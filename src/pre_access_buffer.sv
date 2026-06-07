@@ -3,7 +3,7 @@ module pre_access_buffer(
   cache_intf.pre_buff buff_intf_cache,
   core_intf.pre_buff buff_intf_core
 );
-
+  logic count;
   typedef enum logic[1:0]{IDLE, CACHE_WAIT, CACHE_CHECK, COMB_DATA} state_t;
   state_t state;
   logic[31:0] register_addr;
@@ -12,10 +12,12 @@ module pre_access_buffer(
     if(!rst) begin
       buff_intf_cache.buf_data <= 0;
       buff_intf_cache.buf_ready <= 0;
+      count <= 0;
       state <= IDLE;
     end else begin
       case(state)
         IDLE: begin
+          count <= 0;
           buff_intf_cache.buf_data <= 0;
           buff_intf_cache.buf_ready <= 0;
           if(buff_intf_core.core_valid && buff_intf_core.ready_core) begin
@@ -31,6 +33,7 @@ module pre_access_buffer(
         CACHE_CHECK: begin
           if(buff_intf_cache.storage_rdata[offset*16 +: 2] != 2'b11) begin
             buff_intf_cache.buf_data[15:0] <= buff_intf_cache.storage_rdata[offset*16 +: 16];
+            buff_intf_cache.buf_data[31:16] <= 16'h0000;
             buff_intf_cache.buf_ready <= 1;
             state <= IDLE;
           end else begin
@@ -47,9 +50,13 @@ module pre_access_buffer(
           buff_intf_cache.buf_tag <= buff_intf_cache.storage_rtag;
         end
         COMB_DATA: begin
+          if(count) begin
           buff_intf_cache.buf_data[31:16] <= buff_intf_cache.storage_rdata[15:0];
           buff_intf_cache.buf_ready <= 1;
           state <= IDLE;
+          end else begin
+            count <= count + 1;
+          end
         end
       endcase
     end
