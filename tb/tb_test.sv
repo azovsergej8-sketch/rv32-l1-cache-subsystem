@@ -23,7 +23,9 @@ class test;
       chk.true_model(cr_if);
     join_any
     disable fork;
-      $display("Test finished!");
+    $display("Test finished!");
+    $dumpoff;
+    #10
     $finish;
   endtask
 endclass
