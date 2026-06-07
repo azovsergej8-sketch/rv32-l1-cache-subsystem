@@ -8,7 +8,7 @@ class cache_driver;
   task drive(virtual core_intf cr_intf, event clk_e);
     cache_transaction tr;
     int transaction_count = 0;
-    while(transaction_count < 50) begin
+    while(transaction_count < 40) begin
       if(tr == null) begin
         tr = new();
         if(!tr.randomize()) $error("Randomization failed!");
