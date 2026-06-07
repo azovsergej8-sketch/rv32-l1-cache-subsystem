@@ -1,7 +1,6 @@
 class cache_transaction;
   rand logic[31:0] addr;
   rand logic inj_split;
-  rand logic is_16_bit;
   rand logic is_replace_check;
   static logic [31:0] address_history[$]; 
   static int max_history_size = 16;
@@ -10,9 +9,13 @@ class cache_transaction;
     if(inj_split) addr[3:0] inside {[4'hE : 4'hF]};
     else addr[3:0] dist {[0:9] :/ 80, [10:15] :/ 20};
   };
-
+  
+  constraint half_word_align {
+    addr[0] == 1'b0; 
+  };
+  
   constraint split_inj_c{
-    inj_split dist { 1 := 10, 0 := 90 };
+    inj_split dist { 1 := 15, 0 := 85 };
   };
 
   constraint check_replace_c{
@@ -27,7 +30,7 @@ class cache_transaction;
   endfunction
 
   function void take_addr(logic[31:0] a);
-    if(address_history.size() == max_history_size) address_history.pop_front();
+    if(address_history.size() == max_history_size) void'(address_history.pop_front());
     address_history.push_back(a);
   endfunction
 endclass
