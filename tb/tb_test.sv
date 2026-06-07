@@ -21,9 +21,9 @@ class test;
       drv.drive(cr_if, clk_ev);
       mem.run_mem_responder(mem_if, clk_ev);
       chk.true_model(cr_if);
-    join
+    join_any
     disable fork;
+      $display("Test finished!");
     $finish;
-    $display("Тест завершен!");
   endtask
 endclass
