@@ -25,7 +25,7 @@ class test;
     disable fork;
     $display("Test finished!");
     $dumpoff;
-    #10
+    #10;
     $finish;
   endtask
 endclass
