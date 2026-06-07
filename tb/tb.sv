@@ -23,10 +23,15 @@ module tb_top;
   );
 
   initial begin
+    test actual_test;
     addr_fifo = new();
-    test actual_test = new(intermediate_core_io, intermediate_mem_io, addr_fifo, clk_ev);
+    actual_test = new(intermediate_core_io, intermediate_mem_io, addr_fifo, clk_ev);
     actual_test.run();
-    $finish;
+  end
+
+  initial begin
+    $dumpfile("dump.vcd"); 
+    $dumpvars(0, tb_top);  
   end
   
 endmodule
