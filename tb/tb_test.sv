@@ -16,12 +16,14 @@ class test;
   endfunction
 
   task run();
+  	repeat(2) @(clk_ev);
     fork
       drv.drive(cr_if, clk_ev);
       mem.run_mem_responder(mem_if, clk_ev);
       chk.true_model(cr_if);
-    join_any
+    join
     disable fork;
+    $finish;
     $display("Тест завершен!");
   endtask
 endclass
