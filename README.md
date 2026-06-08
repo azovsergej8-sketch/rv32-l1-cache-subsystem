@@ -1,5 +1,8 @@
 # RISC-V L1 Instruction Cache Controller
 
+[![SystemVerilog](https://img.shields.io/badge/Language-SystemVerilog-blue.svg)](https://en.wikipedia.org/wiki/SystemVerilog)
+[![RISC-V](https://img.shields.io/badge/Architecture-RISC--V-orange.svg)](https://riscv.org/)
+
 A synthesizable 2-Way Set Associative L1 Instruction Cache Controller designed for RISC-V processor cores[cite: 2, 3]. The module provides hardware support for compressed instruction fetching (RVC Extension)[cite: 2] and integrates with the system bus via an AMBA AHB-Lite compatible interface[cite: 2].
 
 ## Project Architecture
