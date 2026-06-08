@@ -33,7 +33,7 @@ A robust object-oriented verification environment (SV OOP TB) was built to valid
 
 Below is a hardware timing diagram captured during simulation, illustrating the behavior of the cache controller:
 
-![L1 Cache Waveforms](./Снимок%20экрана%202026-06-08%20000521.png)
+![L1 Cache Waveforms](./Waveforms.png)
 
 Key behavioral milestones visible in the waveform include:
 *   The primary control FSM state transitions (`state`: `IDLE` $\rightarrow$ `CACHE_CHECK` $\rightarrow$ `AHB_DATA`)[cite: 1, 2].
